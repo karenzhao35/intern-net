@@ -1,26 +1,10 @@
-from django.shortcuts import render
-
+from django.http import HttpResponse
 # Create your views here.
 import re
 import json
 from scrapfly import ScrapflyClient, ScrapeConfig
 
 scrapfly = ScrapflyClient(key="scp-live-764641ae102e46e0a74641837f839c45")
-
-def parse_search_page(html: str, limit: int = None):
-    data = re.findall(r'window.mosaic.providerData\["mosaic-provider-jobcards"\]=(\{.+?\});', html)
-    if not data:
-        return None
-    data = json.loads(data[0])
-    
-    results = data["metaData"]["mosaicProviderJobCardsModel"]["results"]
-    if limit:
-        results = results[:limit]
-
-    return {
-        "results": results,
-        "meta": data["metaData"]["mosaicProviderJobCardsModel"]["tierSummaries"],
-    }
 
 result = scrapfly.scrape(
     ScrapeConfig(
@@ -29,5 +13,22 @@ result = scrapfly.scrape(
     )
 )
 
-# Example: limit to 5 items
-print(parse_search_page(result.content, limit=5))
+
+def parse_search_page(request):
+    data = re.findall(r'window.mosaic.providerData\["mosaic-provider-jobcards"\]=(\{.+?\});', result.content)
+    if not data:
+        return None
+    data = json.loads(data[0])
+    
+    results = data["metaData"]["mosaicProviderJobCardsModel"]["results"]
+    results = results[:5]
+
+    return HttpResponse(json.dumps({
+        "results": results,
+        "meta": data["metaData"]["mosaicProviderJobCardsModel"]["tierSummaries"],
+    }), content_type="application/json")
+
+
+
+# # Example: limit to 5 items
+# print(parse_search_page())

@@ -23,4 +23,5 @@ import debug_toolbar
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('playground/', include('playground.urls')),
+    #path('scrape/', include('scrape.urls')),
 ] + debug_toolbar_urls()
