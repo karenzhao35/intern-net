@@ -1,8 +1,8 @@
 # map url to view
 from django.urls import path
-from . import views
+from .views import hello_view
 
 # URL Configuration
 urlpatterns = [
-    path('hello/', views.say_hello),
+    path('hello/', hello_view, name='hello_view'),
 ]

@@ -1,10 +1,18 @@
 from django.shortcuts import render
 from django.http import HttpResponse
+
+from rest_framework.response import Response
+from rest_framework.decorators import api_view
+
 # Create your views here.
 # request -> response (request handler)
 import json
 
-def say_hello(request):
-    # pull data, transform data, pass data to template
-    # return render(request, 'hello.html', {'name': 'Karen'})
-    return HttpResponse(json.dumps({'name': 'Karen'}), content_type="application/json")
+@api_view(['GET'])
+def hello_view(request):
+    data = {
+        # Your JSON data here
+        "message": "Hello, World!",
+        "status": "success"
+    }
+    return Response(data)
